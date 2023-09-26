@@ -3,35 +3,50 @@ package br.com.josenildo.airportmanagement.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
+import java.util.UUID;
+
 
 @Document("flights")
 public class FlightInformation {
-
     @Id
     private String id;
 
+    @SuppressWarnings("FieldMayBeFinal")
+    @Indexed(unique = true)
+    private String internalId;
+
     @Field("departure")
+    @TextIndexed
     private String departureCity;
 
     @Field("destination")
-    @Indexed
-    private String destinationCoty;
+    @TextIndexed
+    private String destinationCity;
+
+    @TextIndexed(weight = 2)
+    private String description;
+
+    @Field("duration")
+    private int durationMin;
+
+    private LocalDate departureDate;
 
     private FlightType type;
     private boolean isDelayed;
-    private int durationMin;
-    private LocalDate departureDate;
     private Aircraft aircraft;
 
     @Transient
-    private LocalDate createdAt;
+    private final LocalDate createdAt;
 
-    public FlightInformation() { this.createdAt = LocalDate.now(); }
-
+    public FlightInformation() {
+        this.createdAt = LocalDate.now();
+        this.internalId = UUID.randomUUID().toString();
+    }
 
     public String getId() {
         return id;
@@ -49,12 +64,12 @@ public class FlightInformation {
         this.departureCity = departureCity;
     }
 
-    public String getDestinationCoty() {
-        return destinationCoty;
+    public String getDestinationCity() {
+        return destinationCity;
     }
 
-    public void setDestinationCoty(String destinationCoty) {
-        this.destinationCoty = destinationCoty;
+    public void setDestinationCity(String destinationCity) {
+        this.destinationCity = destinationCity;
     }
 
     public FlightType getType() {
@@ -101,7 +116,18 @@ public class FlightInformation {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    public String getInternalId() {
+        return internalId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
+
+
+
