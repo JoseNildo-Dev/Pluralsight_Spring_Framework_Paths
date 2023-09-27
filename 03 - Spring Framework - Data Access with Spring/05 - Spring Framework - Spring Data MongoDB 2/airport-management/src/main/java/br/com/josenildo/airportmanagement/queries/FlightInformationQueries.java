@@ -13,34 +13,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class FlightInformationQueries {
-
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
     public FlightInformationQueries(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public List<FlightInformation> findAll(String field,
-                                           int pageNb,
-                                           int pageSize) {
-        Query allPagedAndOrdered = new Query()
+    public List<FlightInformation> findAllFlights(String field, int pageNumber, int pageSize) {
+        Query allPagedAndSorted = new Query()
                 .with(Sort.by(Sort.Direction.ASC, field))
-                .with(PageRequest.of(pageNb, pageSize));
+                .with(PageRequest.of(pageNumber, pageSize));
 
-        return this.mongoTemplate.find(allPagedAndOrdered, FlightInformation.class);
+        return mongoTemplate.find(allPagedAndSorted, FlightInformation.class);
     }
 
     public FlightInformation findSingleById(String id) {
-        return this.mongoTemplate.findById(id, FlightInformation.class);
+        return mongoTemplate.findById(id, FlightInformation.class);
     }
 
     public long countInternational() {
-        Query international = Query.query(Criteria.where("type")
+        Query internationalCount = Query.query(Criteria.where("type")
                 .is(FlightType.internacional));
-
-        return this.mongoTemplate.count(international, FlightInformation.class);
+        return mongoTemplate.count(internationalCount, FlightInformation.class);
     }
 
     public List<FlightInformation> findByDeparture(String departure) {
@@ -102,14 +99,7 @@ public class FlightInformationQueries {
         byStreetId.fields().include("departure");
         return mongoTemplate.find(byStreetId, FlightInformation.class).get(0).getDepartureCity();
     }
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
